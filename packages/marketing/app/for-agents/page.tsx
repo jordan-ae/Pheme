@@ -23,11 +23,11 @@ const AGENTS = [
       lang: "json",
       code: `{
   "mcpServers": {
-    "pheme-memory": {
+    "phemesh-memory": {
       "command": "npx",
-      "args": ["-y", "@pheme/memory-mcp"],
+      "args": ["-y", "@phemesh/memory-mcp"],
       "env": {
-        "MEMORY_SERVER_URL": "https://memory.pheme.dev",
+        "MEMORY_SERVER_URL": "https://pheme-ztma.onrender.com",
         "MEMORY_API_KEY": "phm_live_..."
       }
     }
@@ -59,11 +59,11 @@ const AGENTS = [
       lang: "json",
       code: `{
   "mcpServers": {
-    "pheme-memory": {
+    "phemesh-memory": {
       "command": "npx",
-      "args": ["-y", "@pheme/memory-mcp"],
+      "args": ["-y", "@phemesh/memory-mcp"],
       "env": {
-        "MEMORY_SERVER_URL": "https://memory.pheme.dev",
+        "MEMORY_SERVER_URL": "https://pheme-ztma.onrender.com",
         "MEMORY_API_KEY": "phm_live_..."
       }
     }
@@ -89,11 +89,11 @@ const AGENTS = [
       lang: "json",
       code: `{
   "mcpServers": {
-    "pheme-memory": {
+    "phemesh-memory": {
       "command": "npx",
-      "args": ["-y", "@pheme/memory-mcp"],
+      "args": ["-y", "@phemesh/memory-mcp"],
       "env": {
-        "MEMORY_SERVER_URL": "https://memory.pheme.dev",
+        "MEMORY_SERVER_URL": "https://pheme-ztma.onrender.com",
         "MEMORY_API_KEY": "phm_live_..."
       }
     }
