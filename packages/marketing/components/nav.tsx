@@ -29,7 +29,7 @@ export function Nav() {
           ))}
         </nav>
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          <a href="#signin" className="btn btn-ghost" style={{ padding: "8px 14px" }}>
+          <a href="https://pheme-dashboard.vercel.app/login" className="btn btn-ghost" style={{ padding: "8px 14px" }}>
             Sign in
           </a>
           <Link href="/#join" className="btn btn-primary">
