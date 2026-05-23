@@ -92,10 +92,30 @@ export async function listActiveProjects(): Promise<Project[]> {
   return projects;
 }
 
+/* The project registry is read on every authenticated page (the rail in the (app)
+   layout + each page body) but changes only on enroll/off-board. A short-lived
+   global cache removes the per-navigation /projects round-trip; the enroll/off-board
+   server actions call invalidateProjectsCache() so a mutation is reflected at once.
+   Same global-singleton pattern as lib/db.ts. The list is workspace-global (not
+   per-user — tenancy is enforced separately via lib/access), so one shared entry. */
+const PROJECTS_TTL_MS = 30_000;
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __projectsCache: { value: Project[]; expires: number } | undefined;
+}
+
+export function invalidateProjectsCache(): void {
+  global.__projectsCache = undefined;
+}
+
 export async function listAllProjects(): Promise<Project[]> {
+  const cached = global.__projectsCache;
+  if (cached && cached.expires > Date.now()) return cached.value;
   const { projects } = await call<{ projects: Project[] }>(
     "/projects?includeInactive=true",
   );
+  global.__projectsCache = { value: projects, expires: Date.now() + PROJECTS_TTL_MS };
   return projects;
 }
 

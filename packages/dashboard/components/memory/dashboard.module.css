@@ -54,7 +54,10 @@
   color-scheme: dark;
 
   /* container */
-  /* Fills the (app) shell's content cell, beside the shared rail. */
+  /* Fills the (app) shell's content cell, beside the shared rail. position:relative
+     so the full-view overlay anchors to THIS cell (covering only the content area,
+     leaving the rail visible) rather than the whole viewport. */
+  position: relative;
   height: 100%;
   font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
   font-size: 13px;
@@ -411,6 +414,7 @@
   gap: 6px;
   font-size: 12px;
   font-family: var(--font-sans);
+  text-decoration: none;
 }
 .iconbtn:hover {
   background: var(--bg-3);
@@ -853,6 +857,7 @@
   line-height: 1.55;
   color: var(--fg-2);
   margin: 0 0 12px;
+  white-space: pre-wrap;
 }
 .detailWhy {
   font-size: 12.5px;
@@ -942,6 +947,155 @@
   color: var(--fg);
   font-style: normal;
   font-weight: 600;
+}
+
+/* ============================================================
+   FULL-VIEW OVERLAY (the detail panel's "expand")
+   The in-feed expand opens the full view rendered from the already-loaded entry —
+   instant, no navigation, no fetch. It reuses the EntryPage layout below; the
+   /entries/[id] route stays for direct links. Absolute + inset:0 within the
+   position:relative .root, so it covers the content cell ONLY — the shared rail
+   stays visible beside it, matching the old route's full-page view.
+   ============================================================ */
+.fullOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: var(--bg-2);
+  animation: fullOverlayIn 120ms ease-out;
+}
+@keyframes fullOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   ENTRY PAGE (the detail panel's "expand" — also its own route, /entries/[id])
+   Same content as the side panel, given a full page: a centered, wide
+   reading column with the metadata + activity beside the prose.
+   ============================================================ */
+.entryPage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--bg-2);
+}
+.entryBar {
+  height: 48px;
+  flex: 0 0 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+}
+.entryBar a {
+  text-decoration: none;
+}
+.entryBar a.crumb:hover {
+  color: var(--fg);
+}
+.entryBar .id {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-2);
+}
+/* Main reading area + a right metadata rail — the same split the home feed uses
+   (main pane + detail aside), so the full page reads as part of the same product
+   rather than a centered card floating in empty space. */
+.entryWrap {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+.entryScroll {
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.entryScroll::-webkit-scrollbar {
+  width: 10px;
+}
+.entryScroll::-webkit-scrollbar-thumb {
+  background: rgba(220, 210, 255, 0.08);
+  border-radius: 8px;
+  border: 3px solid var(--bg-2);
+}
+/* Fill the main pane (cap only so prose doesn't sprawl on an ultra-wide monitor),
+   left-aligned — the same edge the topbar/feed content uses — rather than a narrow
+   column stranded in the corner. Title and body share one measure so the body never
+   reads as cramped beneath a wider heading. */
+.entryInner {
+  max-width: 1120px;
+  padding: 40px 56px 96px;
+}
+.entryTitle {
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin: 14px 0 22px;
+}
+.entryInner p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--fg-2);
+  margin: 0 0 16px;
+  white-space: pre-wrap;
+}
+.entryInner .detailWhy {
+  font-size: 14px;
+  margin: 10px 0 0;
+}
+.entryAside {
+  min-width: 0;
+  border-left: 1px solid var(--line);
+  background: var(--bg-1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 26px 22px 40px;
+}
+.entryAside::-webkit-scrollbar {
+  width: 10px;
+}
+.entryAside::-webkit-scrollbar-thumb {
+  background: rgba(220, 210, 255, 0.08);
+  border-radius: 8px;
+  border: 3px solid var(--bg-1);
+}
+/* props leads the rail, so drop its stacked-section top divider; activity keeps
+   its divider as the separator between the two. */
+.entryAside .props {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* Narrow viewports: drop the rail under the prose and let the whole page scroll. */
+@media (max-width: 900px) {
+  .entryWrap {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-y: auto;
+  }
+  .entryScroll {
+    overflow: visible;
+  }
+  .entryInner {
+    padding: 32px 24px 40px;
+  }
+  .entryAside {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    overflow: visible;
+    padding: 24px;
+  }
 }
 
 /* Footer hint */

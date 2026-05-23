@@ -19,7 +19,10 @@ function env(name: string): string {
 }
 
 function baseUrl(): string {
-  return process.env.DASHBOARD_URL ?? "http://localhost:3002";
+  // Strip trailing slash so `${baseUrl()}/api/...` can never produce a double
+  // slash. A DASHBOARD_URL with a trailing slash yields a redirect_uri GitHub
+  // rejects as "not associated with this application".
+  return (process.env.DASHBOARD_URL ?? "http://localhost:3002").replace(/\/+$/, "");
 }
 
 export interface Viewer {
@@ -126,15 +129,18 @@ export async function listAccessibleRepos(token: string): Promise<GitHubRepo[]> 
     "/user/installations?per_page=100",
     token,
   );
-  const all: GitHubRepo[] = [];
-  for (const inst of installations) {
-    const data = await gh<{ repositories: RawRepo[] }>(
-      `/user/installations/${inst.id}/repositories?per_page=100`,
-      token,
-    );
-    for (const r of data.repositories) all.push(toRepo(r, String(inst.id)));
-  }
-  return all;
+  // Fan out the per-installation repo reads in parallel. These are independent
+  // GitHub round-trips (~200-500ms each); awaiting them in series made this
+  // O(installations) latency on the tenancy check that runs on every project view.
+  const perInstall = await Promise.all(
+    installations.map((inst) =>
+      gh<{ repositories: RawRepo[] }>(
+        `/user/installations/${inst.id}/repositories?per_page=100`,
+        token,
+      ).then((data) => data.repositories.map((r) => toRepo(r, String(inst.id)))),
+    ),
+  );
+  return perInstall.flat();
 }
 
 // ---- App installation ----

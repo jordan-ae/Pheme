@@ -20,18 +20,24 @@ const MEMORY_PUBLIC_URL = (
 ).replace(/\/$/, "");
 
 /* Primary product surface: the dense memory browser. The navigation rail is the
-   shared one from the (app) layout; the active "view" lives in the URL (?view=…)
-   so this server component reads it and the client just slices the aggregated
-   feed. Entries are scoped per project in the real schema, so we aggregate across
-   the user's active (enrolled) projects into one workspace feed. */
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ view?: string }>;
-}) {
+   shared one from the (app) layout. The active "view" lives in the URL (?view=…)
+   but is read CLIENT-side (the dashboard's useSearchParams) and the rail switches
+   it in place via the History API — so this server component is view-agnostic and
+   never re-runs on a view change; it just ships the aggregated feed once and the
+   client slices it. Entries are scoped per project in the real schema, so we
+   aggregate across the active (enrolled) projects into one workspace feed. */
+/* Recent-activity horizon for the aggregated workspace feed. Each active project
+   contributes its most-recent entries (PER_PROJECT_LIMIT); after merge+sort we ship
+   at most FEED_CAP so the client payload and this server's fan-out are bounded by a
+   constant rather than (projects × limit). All client-side views/tabs filter over
+   this same set, so the cap defines the feed's recency window — the per-project
+   detail page (limit 200, server-filtered) remains the complete, unbounded view. */
+const PER_PROJECT_LIMIT = 75;
+const FEED_CAP = 250;
+
+export default async function HomePage() {
   const session = await getSession();
   if (!session) redirect("/login");
-  const { view } = await searchParams;
 
   let projects: Project[] = [];
   let serverError = false;
@@ -46,7 +52,10 @@ export default async function HomePage({
   // One read per active project, in parallel; individual failures are tolerated.
   const settled = await Promise.allSettled(
     active.map(async (p) => {
-      const { entries } = await listEntries(p.identifier, { status: ALL_STATUSES, limit: 100 });
+      const { entries } = await listEntries(p.identifier, {
+        status: ALL_STATUSES,
+        limit: PER_PROJECT_LIMIT,
+      });
       return entries.map<DashEntry>((e) => ({
         ...e,
         projectIdentifier: p.identifier,
@@ -57,7 +66,8 @@ export default async function HomePage({
 
   const entries: DashEntry[] = settled
     .flatMap((r) => (r.status === "fulfilled" ? r.value : []))
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .slice(0, FEED_CAP);
 
   // First-run onboarding: only computed when the workspace has no memory yet, so
   // the populated dashboard never pays for the extra GitHub/keys round-trips.
@@ -84,7 +94,6 @@ export default async function HomePage({
   return (
     <MemoryDashboard
       entries={entries}
-      view={view || "my"}
       user={{ login: session.login, name: session.name, email: session.email }}
       serverError={serverError}
       onboarding={onboarding}

@@ -69,6 +69,19 @@ export function AppSidebar({
   const viewActive = (key: string) => onHome && currentView === key;
   const routeActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
+  /* View links all point back to the home feed (`/` or `/?view=…`). When we're
+     already on home, switching views is pure client-side filtering of data the
+     page already holds, so update the URL in place via the History API — Next keeps
+     usePathname/useSearchParams in sync, the feed re-filters with zero network, and
+     Back/Forward still work. Off-home (or on modifier/middle click) we let the
+     <Link> navigate normally so we actually land on the feed / open a new tab. */
+  function onViewClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    if (!onHome) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    window.history.pushState(null, "", href);
+  }
+
   const [mode, setMode] = useState<Mode>(DEFAULT_MODE);
   useEffect(() => {
     try {
@@ -114,19 +127,19 @@ export function AppSidebar({
       </div>
 
       <div className="rail-section">
-        <Link href={viewHref("inbox")} title="Inbox" className={`rail-item${viewActive("inbox") ? " active" : ""}`}>
+        <Link href={viewHref("inbox")} onClick={(e) => onViewClick(e, viewHref("inbox"))} title="Inbox" className={`rail-item${viewActive("inbox") ? " active" : ""}`}>
           <span className="ic">
             <Icons.Inbox />
           </span>
           <span className="label">Inbox</span>
         </Link>
-        <Link href={viewHref("my")} title="My memory" className={`rail-item${viewActive("my") ? " active" : ""}`}>
+        <Link href={viewHref("my")} onClick={(e) => onViewClick(e, viewHref("my"))} title="My memory" className={`rail-item${viewActive("my") ? " active" : ""}`}>
           <span className="ic">
             <Icons.Brain />
           </span>
           <span className="label">My memory</span>
         </Link>
-        <Link href={viewHref("agents")} title="Agent activity" className={`rail-item${viewActive("agents") ? " active" : ""}`}>
+        <Link href={viewHref("agents")} onClick={(e) => onViewClick(e, viewHref("agents"))} title="Agent activity" className={`rail-item${viewActive("agents") ? " active" : ""}`}>
           <span className="ic">
             <Icons.Sparkle />
           </span>
@@ -157,6 +170,7 @@ export function AppSidebar({
               <Link
                 key={p.id}
                 href={viewHref(key)}
+                onClick={(e) => onViewClick(e, viewHref(key))}
                 title={label}
                 className={`rail-item${viewActive(key) ? " active" : ""}`}
               >
@@ -192,6 +206,7 @@ export function AppSidebar({
               <Link
                 key={v.slug}
                 href={viewHref(key)}
+                onClick={(e) => onViewClick(e, viewHref(key))}
                 title={v.label}
                 className={`rail-item${viewActive(key) ? " active" : ""}`}
               >
@@ -215,7 +230,7 @@ export function AppSidebar({
           teams.map((t) => {
             const key = `team:${t.slug}`;
             return (
-              <Link key={t.id} href={viewHref(key)} title={t.name} className={`rail-item${viewActive(key) ? " active" : ""}`}>
+              <Link key={t.id} href={viewHref(key)} onClick={(e) => onViewClick(e, viewHref(key))} title={t.name} className={`rail-item${viewActive(key) ? " active" : ""}`}>
                 <span className="rail-dot" style={{ background: colorFor(t.slug) }}>
                   {t.name[0]?.toUpperCase() ?? "·"}
                 </span>

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import s from "./dashboard.module.css";
 import { Icons } from "./icons";
 import { List } from "./dash-list";
-import { Detail } from "./dash-detail";
+import { Detail, EntryFullView } from "./dash-detail";
 import { OnboardingPanel, type OnboardingStatus } from "./onboarding-panel";
 import { type DashEntry, TYPE_META } from "./format";
 import type { EntryType } from "@/lib/memory";
@@ -75,25 +76,34 @@ function matchesView(e: DashEntry, view: string): boolean {
 
 export function MemoryDashboard({
   entries,
-  view,
   user,
   serverError,
   onboarding,
 }: {
   entries: DashEntry[];
-  view: string;
   user: { login: string; name: string | null; email: string };
   serverError: boolean;
   /* Present only on a fresh workspace (no memory yet) — drives the inline
      first-run connect checklist that replaces the empty state. */
   onboarding?: OnboardingStatus;
 }) {
+  /* The active view lives in the URL (?view=…). Reading it from the live router
+     (not a server prop) means the rail can switch views with window.history in
+     place — the feed re-filters instantly off data already in the client, with no
+     server round-trip. During SSR this reflects the request's searchParams, so the
+     first paint is correct. */
+  const searchParams = useSearchParams();
+  const view = searchParams.get("view") || "my";
+
   const [density, setDensity] = useState<Density>("compact");
   const [tab, setTab] = useState<TabKey>("activity");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [group, setGroup] = useState<"status" | "type">("status");
   const [detailOpen, setDetailOpen] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Full view is a client-side overlay rendered from the already-loaded entry —
+  // instant, no navigation/fetch. (The /entries/[id] route stays for direct links.)
+  const [expanded, setExpanded] = useState(false);
 
   // Density is a home-only display pref (theme is owned app-wide by the rail).
   useEffect(() => {
@@ -143,6 +153,22 @@ export function MemoryDashboard({
 
   const selected = visible.find((e) => e.id === selectedId) ?? null;
   const showDetail = detailOpen && !!selected;
+
+  // The full-view overlay needs a selected entry; collapse it if the selection
+  // clears (e.g. the view/filter changes out from under it).
+  useEffect(() => {
+    if (!selected) setExpanded(false);
+  }, [selected]);
+
+  // Escape closes the overlay (matches the in-bar Back control).
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExpanded(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded]);
 
   const title = viewTitle(view);
   const pendingInView = viewEntries.filter((e) => e.status === "pending_review").length;
@@ -281,18 +307,35 @@ export function MemoryDashboard({
           )}
         </main>
 
-        {showDetail && selected && <Detail entry={selected} onClose={() => setDetailOpen(false)} />}
+        {showDetail && selected && (
+          <Detail
+            entry={selected}
+            onClose={() => setDetailOpen(false)}
+            onExpand={() => setExpanded(true)}
+          />
+        )}
       </div>
 
-      {/* Floating command hint */}
-      <div className={s.footbar}>
-        <span className={s.kbd}>⌘</span>
-        <span className={s.kbd}>K</span>
-        <span>command menu</span>
-        <span className={s.footDot}>·</span>
-        <span className={s.kbd}>C</span>
-        <span>new entry</span>
-      </div>
+      {/* Full-view overlay — rendered from the in-memory entry, so opening it is
+          instant (no route navigation, no server re-fetch). */}
+      {expanded && selected && (
+        <div className={s.fullOverlay} role="dialog" aria-modal="true">
+          <EntryFullView entry={selected} onClose={() => setExpanded(false)} />
+        </div>
+      )}
+
+      {/* Floating command hint — suppressed under the full view so it doesn't
+          float over the reading layout. */}
+      {!expanded && (
+        <div className={s.footbar}>
+          <span className={s.kbd}>⌘</span>
+          <span className={s.kbd}>K</span>
+          <span>command menu</span>
+          <span className={s.footDot}>·</span>
+          <span className={s.kbd}>C</span>
+          <span>new entry</span>
+        </div>
+      )}
     </div>
   );
 }

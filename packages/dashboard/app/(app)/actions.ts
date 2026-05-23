@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
 import { userCanAccess } from "@/lib/access";
-import { deactivateProject, enrollProject, mintKey, revokeKey } from "@/lib/memory";
+import {
+  deactivateProject,
+  enrollProject,
+  invalidateProjectsCache,
+  mintKey,
+  revokeKey,
+} from "@/lib/memory";
 
 /* Mutations invoked from client components. Every project action re-checks the
    session AND the caller's live GitHub access to the target repo, so the tenancy
@@ -20,7 +26,9 @@ type Gate =
 async function requireAccess(identifier: string): Promise<Gate> {
   const session = await getSession();
   if (!session) return { ok: false, error: "not_signed_in" };
-  const allowed = await userCanAccess(session, identifier);
+  // Mutations re-verify live (skipCache) — the read-path access cache must never
+  // let a just-revoked user write through a stale grant.
+  const allowed = await userCanAccess(session, identifier, { skipCache: true });
   if (!allowed) return { ok: false, error: "no_access" };
   return { ok: true, session };
 }
@@ -42,6 +50,7 @@ export async function enrollRepoAction(input: {
       githubRepoId: input.githubRepoId,
       githubInstallationId: input.githubInstallationId,
     });
+    invalidateProjectsCache();
     revalidatePath("/projects");
     revalidatePath("/");
     return { ok: true };
@@ -60,6 +69,7 @@ export async function offboardProjectAction(input: {
 
   try {
     await deactivateProject(input.projectId);
+    invalidateProjectsCache();
     revalidatePath("/projects");
     revalidatePath("/");
     revalidatePath(`/projects/${input.projectId}`);
