@@ -1,0 +1,15 @@
+node_modules
+dist
+
+# Next.js (packages/marketing)
+.next
+out
+next-env.d.ts
+
+.env
+.env.local
+.DS_Store
+*.log
+.turbo
+.cache
+coverage

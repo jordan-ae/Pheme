@@ -1,0 +1,27 @@
+# Project Memory — Cursor instructions
+
+This repo uses a Project Memory server for cross-task context. Always check memory before writing code.
+
+## Rules
+
+1. **Before every task**: call the MCP tool `get_context` from the `phemesh-memory` server. Pass the current git branch and the files you intend to touch. Read the returned `constraints` block carefully — these are non-negotiable.
+
+2. **When uncertain mid-task**: call `search_memory` with a natural-language query. Do not guess about code you don't understand.
+
+3. **When you discover an open question**: stop. Call `list_open_questions` to check whether your task touches a known blocker. If it does, flag it to the user before writing any code.
+
+4. **After making a meaningful decision**: call `log_entry`. The `rationale` field matters most — future agents read it to avoid re-litigating.
+
+## Entry types
+
+- `decision` — a real choice between alternatives
+- `tradeoff` — a deliberately-accepted downside
+- `question` — something unresolved that matters
+- `constraint` — a hard rule from a human reviewer
+
+## Scope
+
+- `scope: feature` + `branch: <current-branch>` for branch-local work
+- `scope: global` only for decisions that should apply across all branches (rare — usually promoted by tech lead at merge time)
+
+If MCP tools fail, the memory server is offline or unconfigured. Surface this to the user once, then proceed without memory.

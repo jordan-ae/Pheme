@@ -1,0 +1,24 @@
+# Project Memory — Windsurf instructions
+
+This repo is connected to a Project Memory server via MCP. The server is registered as `phemesh-memory`.
+
+## Required workflow
+
+**Task start** — call `get_context` (MCP tool) with the current branch and the files involved. Read `constraints` first, then `entries`. Treat all returned items as settled decisions; do not relitigate.
+
+**Mid-task** — call `search_memory` when you encounter unfamiliar code or face a non-obvious choice. Do not guess.
+
+**Touching an open question** — if `get_context` returns an entry of type `question` that overlaps your task, stop and surface it to the user before writing code.
+
+**Task end** — call `log_entry` for any non-trivial decision, accepted trade-off, or new open question. The `rationale` field is mandatory in spirit; future agents rely on it.
+
+## Entry types
+
+| Type | Meaning |
+|---|---|
+| decision | A choice between real alternatives |
+| tradeoff | A consciously-accepted downside |
+| question | An unresolved item that matters |
+| constraint | A hard rule from a human reviewer |
+
+If MCP tools error, proceed without memory and tell the user the server is unreachable.

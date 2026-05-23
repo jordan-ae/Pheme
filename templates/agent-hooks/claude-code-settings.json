@@ -1,0 +1,16 @@
+{
+  "_comment": "Merge this `hooks` block into ~/.claude/settings.json. The hook is a plain curl that posts the Stop payload (session_id, transcript_path, cwd) to the scribe-agent service. The agent itself reads the transcript, runs its reasoning loop, and writes back to memory-server. Set MEMORY_API_KEY in your shell so the curl inherits it.",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s -X POST http://localhost:5000/events/claude-code-stop -H \"Authorization: Bearer $MEMORY_API_KEY\" -H \"Content-Type: application/json\" --data-binary @- > /dev/null"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "phemesh",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Project Memory — agent context & decision intelligence",
+  "scripts": {
+    "dev": "pnpm --filter memory-server dev",
+    "build": "pnpm -r build",
+    "seed": "pnpm --filter memory-server seed",
+    "memory": "node packages/memory-cli/dist/index.js",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
