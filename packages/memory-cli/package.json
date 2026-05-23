@@ -1,5 +1,5 @@
 {
-  "name": "@pheme/memory-cli",
+  "name": "@phemesh/memory-cli",
   "version": "0.1.0",
   "description": "CLI to enroll repos and wire coding agents into Project Memory (Pheme).",
   "license": "MIT",

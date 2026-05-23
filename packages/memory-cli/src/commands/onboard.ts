@@ -21,10 +21,10 @@ interface Agent {
 }
 
 const SERVER_NAME = "phemesh-memory";
-const MCP_PACKAGE = "@pheme/memory-mcp";
+const MCP_PACKAGE = "@phemesh/memory-mcp";
 
 // The launch command written into each agent config. The published default runs
-// the MCP server straight from npm (`npx -y @pheme/memory-mcp`), so it works on
+// the MCP server straight from npm (`npx -y @phemesh/memory-mcp`), so it works on
 // any machine with no local-path assumptions. For local development, point
 // --mcp-entry at a built dist/index.js and we launch it with `node` instead.
 type Launcher = { command: string; args: string[]; localEntry?: string };
@@ -100,7 +100,7 @@ export async function onboard(flags: Record<string, string | undefined>): Promis
   console.log(`  server:    ${cfg.serverUrl}`);
   console.log(`  mcp:       ${launcher.command} ${launcher.args.join(" ")}`);
   if (launcher.localEntry && !existsSync(launcher.localEntry)) {
-    console.log(`  ⚠ not built yet — run: pnpm --filter @pheme/memory-mcp build`);
+    console.log(`  ⚠ not built yet — run: pnpm --filter @phemesh/memory-mcp build`);
   }
   console.log("");
 

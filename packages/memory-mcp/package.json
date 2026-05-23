@@ -1,5 +1,5 @@
 {
-  "name": "@pheme/memory-mcp",
+  "name": "@phemesh/memory-mcp",
   "version": "0.1.0",
   "description": "MCP server exposing Project Memory (Pheme) to coding agents.",
   "license": "MIT",

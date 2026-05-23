@@ -40,7 +40,7 @@ export function OnboardingPanel({ status }: { status: OnboardingStatus }) {
 
   const cmd = `export MEMORY_SERVER_URL="${serverUrl}"
 export MEMORY_API_KEY="<paste your key from step 3>"
-npx @pheme/memory-cli onboard`;
+npx @phemesh/memory-cli onboard`;
 
   async function copyCmd() {
     try {
@@ -159,7 +159,7 @@ npx @pheme/memory-cli onboard`;
             </div>
             <p className={s.stepDesc} style={{ marginTop: 10 }}>
               This configures Claude Code, Cursor, Codex, OpenCode, and Antigravity. In each repo you
-              work in, run <span className={s.codeInline}>npx @pheme/memory-cli init</span> (or enroll
+              work in, run <span className={s.codeInline}>npx @phemesh/memory-cli init</span> (or enroll
               it above) so agents there receive scoped project memory.
             </p>
           </Step>
