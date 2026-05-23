@@ -64,7 +64,7 @@ function FeaturePersistent() {
         <ul className="feature-bullets">
           <li>One store, every agent. No copy-paste tax.</li>
           <li>Decisions, constraints, and tradeoffs as first-class types.</li>
-          <li>Self-host on Postgres + pgvector, or run our managed.</li>
+          <li>Fully managed — no database or infra to run.</li>
         </ul>
       </div>
       <div className="feature-visual">

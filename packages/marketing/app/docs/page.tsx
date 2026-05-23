@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { DocsSidebar } from "@/components/interior/docs-sidebar";
-import { MotifMap, MotifLaurel, MotifStar, MotifPortal, MotifKey, MotifScroll, MotifAmphora, MotifColumn, MotifDove } from "@/components/illustrations";
+import { MotifMap, MotifLaurel, MotifStar, MotifPortal, MotifKey, MotifScroll, MotifAmphora, MotifDove } from "@/components/illustrations";
 
 export const metadata: Metadata = {
   title: "Docs — Pheme",
-  description: "Quickstart and reference for Pheme — the shared memory layer for AI coding agents.",
+  description: "How to connect your coding agent to Pheme — the shared memory layer for AI coding agents.",
 };
 
 function DocsCodeBlock({ code, lang = "bash", label }: { code: string; lang?: string; label?: string }) {
@@ -79,63 +79,61 @@ function Callout({ kind = "info", children }: { kind?: "info" | "warn" | "ok"; c
 function DocsContent() {
   return (
     <div>
-      <DocSection id="quickstart" eyebrow="Quickstart · ~10 min" title="Get to your first memory" motif={<MotifPortal size={64} />}>
+      <DocSection id="connect" eyebrow="Get started · ~2 min" title="Connect your agent" motif={<MotifPortal size={64} />}>
         <p>
-          Pheme is a Node service backed by Postgres. The fastest path to a working memory is to clone the repo, run it locally, and
-          point your agent at it. We&apos;ll do all three on this page.
+          Pheme is a fully managed memory layer — we run the store and the scribe for you. To start, point your MCP-speaking agent at
+          your Pheme workspace with your API key. Once connected, every agent on the project reads and writes the same memory.
         </p>
         <Callout>
-          You&apos;ll need Node 20+, Docker (for Postgres), and a coding agent that speaks MCP — Claude Code, Cursor, or Windsurf are
-          all fine.
+          You&apos;ll need a Pheme workspace API key and a coding agent that speaks MCP — Claude Code, Cursor, or Windsurf are all fine.
+          Don&apos;t have a key yet? <a href="/#join" style={{ color: "var(--accent)" }}>Request access →</a>
         </Callout>
       </DocSection>
 
-      <DocSub id="install" title="1 · Install">
-        <p>Clone the repo and install dependencies. The monorepo uses pnpm.</p>
-        <DocsCodeBlock label="terminal" code={`git clone https://github.com/pheme-labs/pheme
-cd pheme
-pnpm install`} />
-      </DocSub>
-
-      <DocSub id="first-run" title="2 · First run">
-        <p>Spin up Postgres + the memory server with one command.</p>
-        <DocsCodeBlock label="terminal" code={`pnpm dev
-
-# →  memory-server  ready at http://localhost:3000
-# →  scribe-agent   ready at http://localhost:5000
-# →  postgres       (docker) on 5432
-# →  pgvector       extension created`} />
-        <p style={{ marginTop: 16 }}>
-          You should now have an empty memory server running locally. Hit <code className="kbd">/health</code> to confirm.
-        </p>
-        <DocsCodeBlock label="terminal" code={`curl http://localhost:3000/health
-# {"ok":true,"entries":0,"branches":1,"version":"0.4.0"}`} />
-      </DocSub>
-
-      <DocSub id="first-log" title="3 · Your first memory">
+      <DocSub id="key" title="1 · Get your key">
         <p>
-          Log a decision via the REST API. From now on, any agent reading <code className="kbd">/context</code> will see this entry.
+          Your workspace key is issued when your team is onboarded and looks like <code className="kbd">phm_live_…</code>. Treat it like
+          a password — it grants read and write access to your team&apos;s memory.
         </p>
-        <DocsCodeBlock label="terminal" code={`curl -X POST http://localhost:3000/log \\
-  -H "authorization: bearer phm_dev_local" \\
-  -d '{
-    "type": "decision",
-    "title": "Use pgvector over a dedicated vector DB",
-    "body": "Postgres-first stack. No new infra surface.",
-    "files": ["packages/memory-server/**"]
-  }'
+      </DocSub>
 
-# →  { "id": "AD-01", "branch": "main", "version": 1 }`} />
+      <DocSub id="configure" title="2 · Add Pheme to your agent">
+        <p>
+          Drop the MCP entry into your agent&apos;s config once. It points at your hosted Pheme workspace; no local install or server to
+          run.
+        </p>
+        <DocsCodeBlock label="~/.config/agent/mcp.json" lang="json" code={`{
+  "mcpServers": {
+    "pheme-memory": {
+      "command": "npx",
+      "args": ["-y", "@pheme/memory-mcp"],
+      "env": {
+        "MEMORY_SERVER_URL": "https://memory.pheme.dev",
+        "MEMORY_API_KEY": "phm_live_..."
+      }
+    }
+  }
+}`} />
         <Callout kind="ok">
-          You just made <code className="kbd">AD-01</code>. From here, every agent on the project sees it whenever the task touches{" "}
-          <code className="kbd">packages/memory-server</code>.
+          See <a href="/for-agents" style={{ color: "var(--accent)" }}>For agents</a> for copy-paste configs for Claude Code, Cursor,
+          Windsurf, and Codex.
         </Callout>
       </DocSub>
 
-      <DocSection id="mcp" eyebrow="MCP server" title="Four tools, one bearer key" motif={<MotifKey size={64} />}>
+      <DocSub id="verify" title="3 · Your first memory">
         <p>
-          The <code className="kbd">memory-mcp</code> package is a stdio MCP server that wraps the REST API into four agent-callable
-          tools. Drop it in your IDE&apos;s MCP config once and every project gets memory.
+          Restart your agent. The four Pheme tools appear, and the agent calls <code className="kbd">get_context</code> at the start of
+          each task. The first time it logs a decision, every other agent on the project sees it.
+        </p>
+        <Callout kind="ok">
+          From here, when an agent decides something load-bearing — &quot;use pgvector over a dedicated vector DB&quot; — it calls{" "}
+          <code className="kbd">log_entry</code>, and that decision travels with the project from then on.
+        </Callout>
+      </DocSub>
+
+      <DocSection id="mcp" eyebrow="MCP server" title="Four tools, one key" motif={<MotifKey size={64} />}>
+        <p>
+          Pheme exposes its REST API as four agent-callable MCP tools. Configure it once and every project your agent opens gets memory.
         </p>
       </DocSection>
 
@@ -160,27 +158,15 @@ pnpm install`} />
 
       <DocSub id="transports" title="Transports">
         <p>
-          Two transports ship today: <code className="kbd">stdio</code> (default — what MCP uses) and <code className="kbd">http</code>{" "}
-          (for remote agents and serverless loops). Same four tools either way.
+          Two transports ship today: <code className="kbd">stdio</code> (default — what most MCP clients use) and{" "}
+          <code className="kbd">http</code> (for remote agents and serverless loops). Same four tools, same hosted memory either way.
         </p>
-        <DocsCodeBlock label="~/.config/agent/mcp.json" lang="json" code={`{
-  "mcpServers": {
-    "pheme-memory": {
-      "command": "node",
-      "args": ["./packages/memory-mcp/dist/index.js"],
-      "env": {
-        "MEMORY_SERVER_URL": "http://localhost:3000",
-        "MEMORY_API_KEY": "phm_dev_local"
-      }
-    }
-  }
-}`} />
       </DocSub>
 
       <DocSection id="cli" eyebrow="CLI" title="Pheme from the terminal" motif={<MotifScroll size={56} />}>
         <p>
-          <code className="kbd">pnpm pheme</code> is the local CLI. It speaks REST under the hood and is useful for batch operations —
-          seeding, exporting, or wiring up custom hooks.
+          The <code className="kbd">pheme</code> CLI speaks the REST API under the hood — handy for batch operations like searching,
+          exporting, or wiring up custom hooks.
         </p>
       </DocSection>
 
@@ -226,48 +212,6 @@ export interface Entry {
 }`} />
       </DocSub>
 
-      <DocSection id="self-host" eyebrow="Self-host" title="Run it on your own infra" motif={<MotifColumn size={56} />}>
-        <p>
-          Pheme is MIT-licensed and runs on stock Postgres + pgvector. The repo ships a one-shot Docker compose; we also have a
-          Supabase template if you&apos;d rather not run Postgres yourself.
-        </p>
-      </DocSection>
-
-      <DocSub id="docker" title="Docker compose">
-        <DocsCodeBlock label="docker-compose.yml" lang="yaml" code={`services:
-  pheme:
-    image: ghcr.io/pheme-labs/pheme:0.4
-    ports: ["3000:3000", "5000:5000"]
-    environment:
-      DATABASE_URL: postgres://pheme:pheme@db:5432/pheme
-      MEMORY_API_KEY: \${MEMORY_API_KEY}
-      ANTHROPIC_API_KEY: \${ANTHROPIC_API_KEY}
-    depends_on: [db]
-  db:
-    image: pgvector/pgvector:pg16
-    environment:
-      POSTGRES_USER: pheme
-      POSTGRES_PASSWORD: pheme
-      POSTGRES_DB: pheme
-    volumes: ["pheme-data:/var/lib/postgresql/data"]
-volumes:
-  pheme-data:`} />
-      </DocSub>
-
-      <DocSub id="supabase" title="Supabase">
-        <p>
-          The hosted Supabase template provisions a Pheme-ready Postgres in two clicks. Use it when you don&apos;t want to babysit a
-          database but still want self-hosted memory.
-        </p>
-        <DocsCodeBlock label="terminal" code={`pnpm pheme deploy supabase --project=your-ref
-# →  enabling pgvector extension...
-# →  running migrations...
-# →  printing MEMORY_SERVER_URL + MEMORY_API_KEY`} />
-        <Callout kind="warn">
-          Supabase free tier is enough for a single team&apos;s memory store (~10k entries). Move to Pro before you hit 50k.
-        </Callout>
-      </DocSub>
-
       <DocSection id="templates" eyebrow="Instruction templates" title="Drop-in files for every agent" motif={<MotifDove size={56} />}>
         <p>
           Pheme ships starter instruction files. Drop one into your project root and your agent will know <em>to call</em> the memory
@@ -301,14 +245,11 @@ Never silently override an existing decision. Use \`supersede\` and explain why.
           color: "var(--ink-3)",
         }}
       >
-        <span>Last updated · May 14, 2026</span>
+        <span>Last updated · May 23, 2026</span>
         <span>
-          <a href="#" style={{ color: "var(--accent)" }}>
-            Edit on GitHub
-          </a>{" "}
-          ·{" "}
-          <a href="#" style={{ color: "var(--accent)", marginLeft: 8 }}>
-            Report an issue
+          Questions?{" "}
+          <a href="mailto:hi@phemesh.dev" style={{ color: "var(--accent)" }}>
+            hi@phemesh.dev
           </a>
         </span>
       </div>
@@ -340,8 +281,8 @@ export default function Page() {
               Read the <em>map.</em>
             </h1>
             <p className="hero-sub" style={{ marginTop: 18 }}>
-              Pheme is small enough that you can read the whole API in 10 minutes. Start with the quickstart; reference is here when
-              you need it.
+              Everything you need to connect your agent to Pheme and put your team&apos;s decisions to work. Start with Connect; the
+              reference is here when you need it.
             </p>
           </div>
         </div>

@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 
 const DOC_SECTIONS = [
   {
-    id: "quickstart",
-    title: "Quickstart",
+    id: "connect",
+    title: "Connect your agent",
     items: [
-      { id: "install", label: "Install" },
-      { id: "first-run", label: "First run" },
-      { id: "first-log", label: "Your first memory" },
+      { id: "key", label: "Get your key" },
+      { id: "configure", label: "Add Pheme" },
+      { id: "verify", label: "Your first memory" },
     ],
   },
   {
@@ -22,12 +22,11 @@ const DOC_SECTIONS = [
   },
   { id: "cli", title: "CLI", items: [{ id: "cli-cmds", label: "Commands" }] },
   { id: "schemas", title: "Schemas", items: [{ id: "entry", label: "Entry" }, { id: "context", label: "Context bundle" }] },
-  { id: "self-host", title: "Self-host", items: [{ id: "docker", label: "Docker" }, { id: "supabase", label: "Supabase" }] },
   { id: "templates", title: "Templates", items: [{ id: "claude-md", label: "CLAUDE.md" }] },
 ];
 
 export function DocsSidebar() {
-  const [active, setActive] = useState("quickstart");
+  const [active, setActive] = useState("connect");
 
   useEffect(() => {
     const all = DOC_SECTIONS.flatMap((s) => [s.id, ...s.items.map((i) => i.id)]);

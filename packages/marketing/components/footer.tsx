@@ -33,11 +33,11 @@ export function Footer() {
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Docs</div>
-            <Link href="/docs">Quickstart</Link>
+            <Link href="/docs">Connect your agent</Link>
             <Link href="/docs#mcp">MCP server</Link>
             <Link href="/docs#cli">CLI</Link>
             <Link href="/docs#schemas">Schemas</Link>
-            <Link href="/docs#self-host">Self-host</Link>
+            <Link href="/docs#templates">Templates</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Company</div>
@@ -49,7 +49,7 @@ export function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Pheme Labs · MIT</span>
+          <span>© 2026 Pheme Labs</span>
           <span>Pheme — Φήμη — the messenger</span>
         </div>
       </div>

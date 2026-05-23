@@ -14,7 +14,7 @@ ALTER TABLE memory_entries
 --    Identifiers are the canonical git-remote form produced by `memory init`
 --    (scheme/user/.git stripped, lower-cased).
 INSERT INTO projects (identifier, name, enrolled_by) VALUES
-  ('github.com/bleash-dev/phemesh',       'phemesh',       'jordan-ae'),
+  ('github.com/jordan-ae/pheme',          'pheme',         'jordan-ae'),
   ('github.com/bleash-dev/ab-tcf-canada', 'ab-tcf-canada', 'jordan-ae')
 ON CONFLICT (identifier) DO UPDATE SET active = true;
 
@@ -28,7 +28,7 @@ WHERE branch = 'feature/german-exam-profile-poc'
   AND project_id IS NULL;
 
 UPDATE memory_entries
-SET project_id = (SELECT id FROM projects WHERE identifier = 'github.com/bleash-dev/phemesh')
+SET project_id = (SELECT id FROM projects WHERE identifier = 'github.com/jordan-ae/pheme')
 WHERE project_id IS NULL;
 
 -- 4. Now that every row is owned, forbid unowned entries going forward.

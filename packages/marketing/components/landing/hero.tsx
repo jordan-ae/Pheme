@@ -65,11 +65,11 @@ export function Hero() {
           </span>
           <span className="hero-meta">
             <span className="hero-meta-dot pulse-soft" style={{ animationDelay: "0.8s" }} />
-            self-hostable
+            your code stays put
           </span>
           <span className="hero-meta">
             <span className="hero-meta-dot pulse-soft" style={{ animationDelay: "1.6s" }} />
-            MIT license · v0.4
+            private beta · v0.4
           </span>
         </div>
 

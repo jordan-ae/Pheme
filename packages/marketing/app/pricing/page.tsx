@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import type { ComponentType, CSSProperties } from "react";
 import { PageHero, PageSection } from "@/components/page-shell";
 import { PricingFAQ } from "@/components/interior/faq";
-import { MotifKey, MotifLyre, MotifColumn, MotifAmphora, MotifLaurel, MotifStar } from "@/components/illustrations";
+import { MotifLyre, MotifColumn, MotifAmphora, MotifLaurel, MotifStar } from "@/components/illustrations";
 
 export const metadata: Metadata = {
   title: "Pricing — Pheme",
-  description: "The core memory layer is free and MIT-licensed. Pay for the hosted scribe agent and team features.",
+  description: "Fully managed memory for AI coding agents. Simple per-seat Team pricing and custom Enterprise plans.",
 };
 
 type Tier = {
@@ -24,24 +24,6 @@ type Tier = {
 
 const TIERS: Tier[] = [
   {
-    id: "self",
-    name: "Self-hosted",
-    tone: "tone-mint",
-    motif: MotifKey,
-    price: "$0",
-    suffix: "/ forever",
-    pitch: "Run Pheme on your own infra. Postgres + a Node process. MIT license.",
-    cta: { label: "Read the docs", href: "/docs", variant: "ghost" },
-    features: [
-      "Unlimited memories",
-      "Unlimited agents & seats",
-      "All four MCP tools",
-      "Bring your own Postgres",
-      "Community support · Discord",
-      "MIT — fork it, embed it",
-    ],
-  },
-  {
     id: "team",
     name: "Team",
     tone: "tone-lav",
@@ -52,7 +34,7 @@ const TIERS: Tier[] = [
     pitch: "Hosted memory + scribe. Per-team store, shared keys, branch reviews.",
     cta: { label: "Join waitlist", href: "/#join", variant: "primary" },
     features: [
-      "Everything in Self-hosted",
+      "Unlimited memories & agents",
       "Managed Postgres + pgvector",
       "Hosted scribe agent (Claude, GPT, Gemini)",
       "Slack & GitHub PR adapters",
@@ -81,16 +63,16 @@ const TIERS: Tier[] = [
 ];
 
 const COMPARE_ROWS: (string | boolean)[][] = [
-  ["Memories", "unlimited", "unlimited", "unlimited"],
-  ["Seats", "unlimited", "by seat", "unlimited"],
-  ["MCP tools", true, true, true],
-  ["Branch-aware memory", true, true, true],
-  ["Scribe agent", "self-hosted", "managed", "managed"],
-  ["Slack & PR adapters", false, true, true],
-  ["Audit log + SSO", false, true, true],
-  ["VPC / on-prem deploy", false, false, true],
-  ["SOC 2 · DPA · BAA", false, false, true],
-  ["Support", "community", "email + slack", "dedicated"],
+  ["Memories", "unlimited", "unlimited"],
+  ["Seats", "by seat", "unlimited"],
+  ["MCP tools", true, true],
+  ["Branch-aware memory", true, true],
+  ["Scribe agent", "managed", "managed"],
+  ["Slack & PR adapters", true, true],
+  ["Audit log + SSO", true, true],
+  ["VPC / on-prem deploy", false, true],
+  ["SOC 2 · DPA · BAA", false, true],
+  ["Support", "email + slack", "dedicated"],
 ];
 
 const thp: CSSProperties = {
@@ -122,7 +104,7 @@ function mark(on: boolean): CSSProperties {
 function PricingTiers() {
   return (
     <PageSection style={{ paddingTop: 24 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18, alignItems: "stretch" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 18, alignItems: "stretch", maxWidth: 760, margin: "0 auto" }}>
         {TIERS.map((t) => {
           const M = t.motif;
           return (
@@ -218,7 +200,6 @@ function ComparisonTable() {
           <thead>
             <tr>
               <th style={{ ...thp, width: "34%" }} />
-              <th style={thp}>Self-hosted</th>
               <th style={{ ...thp, background: "color-mix(in oklab, var(--lavender) 26%, white)", color: "var(--plum)" }}>Team</th>
               <th style={thp}>Enterprise</th>
             </tr>
@@ -257,13 +238,13 @@ export default function Page() {
         eyebrow="Pricing · honest"
         title={
           <>
-            Pay <em>for the agent</em>, not the storage.
+            Simple, <em>per-seat</em> pricing.
           </>
         }
         sub={
           <>
-            The core memory layer is free and MIT-licensed. We charge for the hosted scribe agent and team features — the parts that
-            take real ops work to run.
+            Fully managed memory for your coding agents — we run the store and the scribe so you don&apos;t have to. Start with Team;
+            talk to us when you need VPC, SSO, and custom retention.
           </>
         }
         ornament={

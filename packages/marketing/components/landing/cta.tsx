@@ -39,7 +39,7 @@ export function CTA() {
               <WaitlistForm source="home" buttonLabel="Request access" />
             </div>
             <div style={{ marginTop: 14, fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--ink-3)" }}>
-              ~2 day review · MIT license · self-host or managed
+              ~2 day review · onboarding included · fully managed
             </div>
           </div>
         </div>

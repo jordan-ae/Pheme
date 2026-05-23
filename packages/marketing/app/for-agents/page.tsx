@@ -24,8 +24,8 @@ const AGENTS = [
       code: `{
   "mcpServers": {
     "pheme-memory": {
-      "command": "node",
-      "args": ["/path/to/pheme/packages/memory-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@pheme/memory-mcp"],
       "env": {
         "MEMORY_SERVER_URL": "https://memory.pheme.dev",
         "MEMORY_API_KEY": "phm_live_..."
@@ -40,10 +40,10 @@ const AGENTS = [
 }`,
     },
     steps: [
-      "Install pnpm and clone the pheme repo",
-      "Build the MCP shim: pnpm --filter memory-mcp build",
-      "Add the snippet above to your settings.json",
+      "Grab your workspace API key from Pheme",
+      "Add the MCP snippet above to your settings.json",
       "Restart Claude Code — the four tools appear",
+      "Optional: drop CLAUDE.md in (Docs → Templates)",
     ],
   },
   {
@@ -60,8 +60,8 @@ const AGENTS = [
       code: `{
   "mcpServers": {
     "pheme-memory": {
-      "command": "node",
-      "args": ["/path/to/pheme/packages/memory-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@pheme/memory-mcp"],
       "env": {
         "MEMORY_SERVER_URL": "https://memory.pheme.dev",
         "MEMORY_API_KEY": "phm_live_..."
@@ -74,7 +74,7 @@ const AGENTS = [
       "Enable MCP in Cursor → Settings → Features",
       "Drop a .cursor/mcp.json in any project root",
       "Reload — Cursor exposes the tools to the agent",
-      "Add .cursorrules from templates/agent-instructions/",
+      "Add .cursorrules (Docs → Templates)",
     ],
   },
   {
@@ -90,8 +90,8 @@ const AGENTS = [
       code: `{
   "mcpServers": {
     "pheme-memory": {
-      "command": "node",
-      "args": ["/path/to/pheme/packages/memory-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@pheme/memory-mcp"],
       "env": {
         "MEMORY_SERVER_URL": "https://memory.pheme.dev",
         "MEMORY_API_KEY": "phm_live_..."
@@ -104,7 +104,7 @@ const AGENTS = [
       "Open Windsurf → Settings → Cascade → MCP",
       "Paste the snippet above",
       "Restart Cascade",
-      "Add .windsurfrules from templates/agent-instructions/",
+      "Add .windsurfrules (Docs → Templates)",
     ],
   },
   {

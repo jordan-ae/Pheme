@@ -82,12 +82,35 @@ export const projects = pgTable(
     enrolledBy: text("enrolled_by"),
     enrolledAt: timestamp("enrolled_at", { withTimezone: true }).notNull().defaultNow(),
     active: boolean("active").notNull().default(true),
+    // Optional GitHub linkage (set when enrolled through the dashboard's GitHub App).
+    // A repo can still be enrolled by raw identifier via `memory init` with these null.
+    githubRepoId: text("github_repo_id"),
+    githubInstallationId: text("github_installation_id"),
   },
   (t) => [index("projects_active_idx").on(t.active)],
 );
 
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
+
+// GitHub App installations (dashboard). Persisted so the server can mint
+// installation tokens for repo-content access. Sessions are stateless JWT
+// cookies, so no session table is needed.
+export const githubInstallations = pgTable(
+  "github_installations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    installationId: text("installation_id").notNull().unique(),
+    accountLogin: text("account_login").notNull(),
+    accountType: text("account_type"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("github_installations_account_idx").on(t.accountLogin)],
+);
+
+export type GithubInstallation = typeof githubInstallations.$inferSelect;
+export type NewGithubInstallation = typeof githubInstallations.$inferInsert;
 
 // Per-user API keys (AD-07 v2, greenlit by tech-lead sign-off 2026-05-23).
 // We store only the SHA-256 hash of each key, never the raw value. The server

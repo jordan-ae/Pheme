@@ -14,8 +14,8 @@ const SEED_BRANCH = "global";
 // The AD-01..AD-13 decisions describe phemesh's own architecture, so they belong
 // to the phemesh project (AD-13) — not a cross-project tier. Override the
 // identifier for a different deployment with MEMORY_SEED_PROJECT.
-const SEED_PROJECT_IDENTIFIER = process.env.MEMORY_SEED_PROJECT ?? "github.com/bleash-dev/phemesh";
-const SEED_PROJECT_NAME = "phemesh";
+const SEED_PROJECT_IDENTIFIER = process.env.MEMORY_SEED_PROJECT ?? "github.com/jordan-ae/pheme";
+const SEED_PROJECT_NAME = "pheme";
 
 // Ensure the phemesh project exists and return its id (idempotent).
 async function ensureSeedProject(): Promise<string> {

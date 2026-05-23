@@ -12,12 +12,12 @@ const FAQ = [
     a: "No. Pheme exposes an MCP server and a REST API. Anything that speaks either can read and write memory. Today: Claude Code, Cursor, Windsurf, Zed, Codex CLI, Aider, Continue.",
   },
   {
-    q: "Can I self-host?",
-    a: "Yes — Pheme is MIT and runs on Node + Postgres + pgvector. We publish a one-command docker compose. Most teams start self-hosted and migrate to Team when they want the scribe agent and Slack adapters.",
+    q: "Where does my memory live?",
+    a: "Pheme is a fully managed service — we run the Postgres + pgvector store and the scribe for you. Your team gets an isolated memory store and an API key; there's nothing to deploy or operate.",
   },
   {
     q: "How do you handle proprietary code in the scribe loop?",
-    a: "The scribe runs in your provider's account (Anthropic, OpenAI, Google) via the SDKs you already use. No code leaves your perimeter unless you set MEMORY_SERVER_URL to our hosted instance.",
+    a: "The scribe extracts decisions — titles, rationale, constraints — not your source. It runs against the model provider you choose (Anthropic, OpenAI, Google), and we store the distilled memory entries, never your codebase.",
   },
   {
     q: "What counts as a 'seat'?",
@@ -25,7 +25,7 @@ const FAQ = [
   },
   {
     q: "When will Team be generally available?",
-    a: "We're onboarding ~5 new teams per week from the waitlist. Expect general availability mid-Q3 2026. Self-hosted is GA today.",
+    a: "We're onboarding ~5 new teams per week from the waitlist. Expect general availability mid-Q3 2026.",
   },
 ];
 

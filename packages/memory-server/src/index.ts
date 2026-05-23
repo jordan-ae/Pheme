@@ -5,6 +5,7 @@ import { logRouter } from "./routes/log.js";
 import { contextRouter } from "./routes/context.js";
 import { searchRouter } from "./routes/search.js";
 import { supersedeRouter } from "./routes/supersede.js";
+import { entriesRouter } from "./routes/entries.js";
 import { projectsRouter } from "./routes/projects.js";
 import { keysRouter } from "./routes/keys.js";
 
@@ -23,6 +24,7 @@ app.use(logRouter);
 app.use(contextRouter);
 app.use(searchRouter);
 app.use(supersedeRouter);
+app.use(entriesRouter);
 app.use(projectsRouter);
 // Project-independent: enrollment and key minting carry no X-Project context.
 app.use(keysRouter);

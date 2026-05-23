@@ -266,8 +266,8 @@ export default function Page() {
         }
         sub={
           <>
-            Pheme is deliberately boring. No new database. No proprietary format. A REST API, an MCP shim, and one tool-use agent —
-            all composable, all self-hostable.
+            Pheme is deliberately boring. No new database for you to run. No proprietary format. A REST API, an MCP shim, and one
+            tool-use agent — all working together so your agents never lose the thread.
           </>
         }
         ornament={
@@ -352,15 +352,14 @@ export default function Page() {
           <div style={{ maxWidth: 560, position: "relative", zIndex: 1 }}>
             <span className="eyebrow">Build with Pheme</span>
             <h2 className="section-title" style={{ textAlign: "left", marginTop: 12 }}>
-              Read the <em>quickstart</em>, then ship a memory.
+              Connect your agent, then ship a memory.
             </h2>
             <p className="section-desc" style={{ marginLeft: 0, textAlign: "left", marginTop: 12 }}>
-              The quickstart walks you from <code className="kbd">git clone</code> to your first <code className="kbd">log_entry</code> in
-              under 10 minutes.
+              The docs walk you from your API key to your first <code className="kbd">log_entry</code> in a couple of minutes.
             </p>
             <div style={{ display: "flex", gap: 12, marginTop: 22 }}>
               <a href="/docs" className="btn btn-primary">
-                Open quickstart →
+                Read the docs →
               </a>
               <a href="/for-agents" className="btn btn-ghost">
                 For agents
