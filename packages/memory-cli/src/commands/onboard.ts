@@ -1,7 +1,6 @@
 import { homedir } from "node:os";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { resolveServerConfig } from "../lib/env.js";
 
 // `memory onboard` — the one-time machine setup (SRS §3.2 ①). Writes the
@@ -22,20 +21,26 @@ interface Agent {
 }
 
 const SERVER_NAME = "phemesh-memory";
+const MCP_PACKAGE = "@pheme/memory-mcp";
 
-// The launch command baked into each agent config: `node <memory-mcp entry>`.
-// Defaults to the built MCP server in this monorepo; override with --mcp-entry
-// (or once memory-mcp is published, point at the npx/global path).
-function resolveMcpEntry(flags: Record<string, string | undefined>): string {
+// The launch command written into each agent config. The published default runs
+// the MCP server straight from npm (`npx -y @pheme/memory-mcp`), so it works on
+// any machine with no local-path assumptions. For local development, point
+// --mcp-entry at a built dist/index.js and we launch it with `node` instead.
+type Launcher = { command: string; args: string[]; localEntry?: string };
+
+function resolveLauncher(flags: Record<string, string | undefined>): Launcher {
   const override = flags["mcp-entry"];
-  if (override) return resolve(override);
-  const here = dirname(fileURLToPath(import.meta.url)); // packages/memory-cli/{dist,src}/commands
-  return resolve(here, "../../..", "memory-mcp/dist/index.js");
+  if (override) {
+    const entry = resolve(override);
+    return { command: "node", args: [entry], localEntry: entry };
+  }
+  return { command: "npx", args: ["-y", MCP_PACKAGE] };
 }
 
 export async function onboard(flags: Record<string, string | undefined>): Promise<void> {
   const cfg = resolveServerConfig(flags);
-  const mcpEntry = resolveMcpEntry(flags);
+  const launcher = resolveLauncher(flags);
   const force = flags.all === "true" || flags.force === "true";
   const env = { MEMORY_SERVER_URL: cfg.serverUrl, MEMORY_API_KEY: cfg.apiKey };
   const home = homedir();
@@ -83,14 +88,19 @@ export async function onboard(flags: Record<string, string | undefined>): Promis
     },
   ];
 
-  const standardEntry = { command: "node", args: [mcpEntry], env };
-  const opencodeEntry = { type: "local", command: ["node", mcpEntry], enabled: true, environment: env };
+  const standardEntry = { command: launcher.command, args: launcher.args, env };
+  const opencodeEntry = {
+    type: "local",
+    command: [launcher.command, ...launcher.args],
+    enabled: true,
+    environment: env,
+  };
 
   console.log(`Onboarding agents on this machine`);
   console.log(`  server:    ${cfg.serverUrl}`);
-  console.log(`  mcp entry: ${mcpEntry}`);
-  if (!existsSync(mcpEntry)) {
-    console.log(`  ⚠ not built yet — run: pnpm --filter memory-mcp build`);
+  console.log(`  mcp:       ${launcher.command} ${launcher.args.join(" ")}`);
+  if (launcher.localEntry && !existsSync(launcher.localEntry)) {
+    console.log(`  ⚠ not built yet — run: pnpm --filter @pheme/memory-mcp build`);
   }
   console.log("");
 
@@ -105,7 +115,7 @@ export async function onboard(flags: Record<string, string | undefined>): Promis
         const entry = a.shape === "opencode" ? opencodeEntry : standardEntry;
         mergeJson(a.file, a.topKey ?? "mcpServers", SERVER_NAME, entry);
       } else {
-        const result = mergeCodexToml(a.file, SERVER_NAME, mcpEntry, env);
+        const result = mergeCodexToml(a.file, SERVER_NAME, launcher, env);
         if (result === "skipped") {
           console.log(`  ✓ ${a.name}: already configured (${a.file})${a.note ? ` — ${a.note}` : ""}`);
           continue;
@@ -150,7 +160,7 @@ function mergeJson(
 function mergeCodexToml(
   filePath: string,
   serverName: string,
-  mcpEntry: string,
+  launcher: Launcher,
   env: Record<string, string>,
 ): "written" | "skipped" {
   mkdirSync(dirname(filePath), { recursive: true });
@@ -165,8 +175,8 @@ function mergeCodexToml(
     .join(", ");
   const block =
     `\n${header}\n` +
-    `command = "node"\n` +
-    `args = [${JSON.stringify(mcpEntry)}]\n` +
+    `command = ${JSON.stringify(launcher.command)}\n` +
+    `args = [${launcher.args.map((a) => JSON.stringify(a)).join(", ")}]\n` +
     `env = { ${envInline} }\n`;
   writeFileSync(filePath, existing + block);
   return "written";

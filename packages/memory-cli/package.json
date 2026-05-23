@@ -1,16 +1,29 @@
 {
-  "name": "memory-cli",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@pheme/memory-cli",
+  "version": "0.1.0",
+  "description": "CLI to enroll repos and wire coding agents into Project Memory (Pheme).",
+  "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jordan-ae/pheme.git",
+    "directory": "packages/memory-cli"
+  },
   "bin": {
     "memory": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "dotenv": "^16.4.5"
