@@ -6,7 +6,7 @@
 
 Decisions, constraints, and trade-offs travel with the *project* — not the conversation. Every agent that touches the repo reads the same truth in real time and writes back what it learns.
 
-[![License: Proprietary](https://img.shields.io/badge/license-proprietary-7c3a3a.svg)](#license)
+[![License: MIT](https://img.shields.io/badge/license-MIT-3c873a.svg)](#license)
 [![Node](https://img.shields.io/badge/node-%E2%89%A520-3c873a.svg)](#requirements)
 [![pnpm](https://img.shields.io/badge/pnpm-%E2%89%A59-f69220.svg)](#requirements)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6.svg)](#requirements)
@@ -464,8 +464,8 @@ Treat every returned **constraint** as non-negotiable, and don't relitigate AD-0
 
 ## License
 
-**Proprietary.** © 2026 Pheme Labs. All rights reserved. This repository is private and shared with collaborators for internal development only — not licensed for redistribution or public use.
+[MIT](LICENSE) © 2026 Arrey Etta
 
 <div align="center">
-<sub>Built in Athens, GA · named for <b>Φήμη</b>, the Greek messenger goddess of report and rumor.</sub>
+<sub>Named for <b>Φήμη</b>, the Greek messenger goddess of report and rumor.</sub>
 </div>

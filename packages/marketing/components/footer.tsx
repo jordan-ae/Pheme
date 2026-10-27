@@ -9,7 +9,7 @@ export function Footer() {
           <div>
             <Wordmark />
             <p style={{ marginTop: 14, color: "var(--ink-2)", fontSize: 14, maxWidth: 280, lineHeight: 1.55 }}>
-              The shared memory layer for AI coding agents. Built in Athens, GA — named for the messenger goddess.
+              The shared memory layer for AI coding agents. Named for the messenger goddess.
             </p>
             <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
               <a href="https://github.com" className="mini-chip" target="_blank" rel="noreferrer">
