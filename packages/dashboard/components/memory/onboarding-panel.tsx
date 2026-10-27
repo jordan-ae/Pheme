@@ -38,9 +38,18 @@ export function OnboardingPanel({ status }: { status: OnboardingStatus }) {
   // The first incomplete step is the "current" one, so exactly one node is ringed.
   const firstTodo = flags.findIndex((f) => !f);
 
-  const cmd = `export MEMORY_SERVER_URL="${serverUrl}"
+  const cmd = `# 1 · Point the CLI at your workspace
+export MEMORY_SERVER_URL="${serverUrl}"
 export MEMORY_API_KEY="<paste your key from step 3>"
-npx @phemesh/memory-cli onboard`;
+
+# 2 · Wire up every agent on this machine (run once)
+npx @phemesh/memory-cli onboard
+
+# 3 · Enroll this repo so its agents get scoped memory
+npx @phemesh/memory-cli init
+
+# 4 · Confirm it took
+npx @phemesh/memory-cli status`;
 
   async function copyCmd() {
     try {
@@ -158,9 +167,11 @@ npx @phemesh/memory-cli onboard`;
               <pre className={s.cmdBody}>{cmd}</pre>
             </div>
             <p className={s.stepDesc} style={{ marginTop: 10 }}>
-              This configures Claude Code, Cursor, Codex, OpenCode, and Antigravity. In each repo you
-              work in, run <span className={s.codeInline}>npx @phemesh/memory-cli init</span> (or enroll
-              it above) so agents there receive scoped project memory.
+              The onboard step configures Claude Code, Cursor, Codex, OpenCode, and Antigravity in one
+              pass — it merges in alongside any existing config and is safe to re-run. Run{" "}
+              <span className={s.codeInline}>npx @phemesh/memory-cli init</span> inside each repo you work
+              in (or enroll it above) so agents there receive scoped project memory, then restart your
+              agents.
             </p>
           </Step>
         </ol>

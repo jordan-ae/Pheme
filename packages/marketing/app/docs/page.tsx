@@ -99,8 +99,37 @@ function DocsContent() {
 
       <DocSub id="configure" title="2 · Add Pheme to your agent">
         <p>
-          Drop the MCP entry into your agent&apos;s config once. It points at your hosted Pheme workspace; no local install or server to
-          run.
+          Two ways to wire it up — both point your agents at the same hosted workspace, so there&apos;s no server to run yourself.
+          The fastest is the Pheme CLI: one <code className="kbd">npx</code> command configures every agent on your machine. Prefer
+          to do it by hand? The raw MCP entry is just below.
+        </p>
+
+        <h4 style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)", margin: "24px 0 0" }}>
+          Option A · Connect with the CLI
+        </h4>
+        <DocsCodeBlock label="terminal" code={`# Point the CLI at your workspace (or pass --server / --key on each command)
+export MEMORY_SERVER_URL="https://pheme-ztma.onrender.com"
+export MEMORY_API_KEY="phm_live_..."
+
+# Wire up every agent on this machine — run once
+npx @phemesh/memory-cli onboard
+
+# Enroll the repo you're in so its agents get scoped memory
+npx @phemesh/memory-cli init
+
+# Confirm it took
+npx @phemesh/memory-cli status`} />
+        <Callout kind="ok">
+          The <code className="kbd">onboard</code> command detects Claude Code, Cursor, OpenCode, Codex, and Antigravity and merges
+          the Pheme MCP entry into each config — it never clobbers what&apos;s already there and is safe to re-run. Restart your
+          agents afterward.
+        </Callout>
+
+        <h4 style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)", margin: "28px 0 0" }}>
+          Option B · Add the MCP entry by hand
+        </h4>
+        <p style={{ marginTop: 8 }}>
+          Drop this into your agent&apos;s MCP config once. It points at your hosted Pheme workspace; same four tools, same memory.
         </p>
         <DocsCodeBlock label="~/.config/agent/mcp.json" lang="json" code={`{
   "mcpServers": {
@@ -165,17 +194,24 @@ function DocsContent() {
 
       <DocSection id="cli" eyebrow="CLI" title="Pheme from the terminal" motif={<MotifScroll size={56} />}>
         <p>
-          The <code className="kbd">pheme</code> CLI speaks the REST API under the hood — handy for batch operations like searching,
-          exporting, or wiring up custom hooks.
+          The Pheme CLI (<code className="kbd">@phemesh/memory-cli</code>) handles the one-time plumbing — connecting your agents,
+          enrolling repos, and minting keys. Day-to-day reading and writing happens through the four MCP tools, which your agent
+          calls on its own.
         </p>
       </DocSection>
 
       <DocSub id="cli-cmds" title="Commands">
-        <DocsCodeBlock label="terminal" code={`pheme log decision "pgvector over dedicated vector DB"
-pheme search "embedding dim"
-pheme context --branch=feature/queue --budget=3000
-pheme supersede AD-04 --reason="HNSW failed at 50k vectors"
-pheme export --format=json > memory.json`} />
+        <DocsCodeBlock label="terminal" code={`# Wire up every agent on this machine (one time)
+npx @phemesh/memory-cli onboard
+
+# Enroll the current repo for scoped memory
+npx @phemesh/memory-cli init
+
+# Show whether this repo is enrolled
+npx @phemesh/memory-cli status
+
+# Mint a personal API key
+npx @phemesh/memory-cli key:create --user you@team.com`} />
       </DocSub>
 
       <DocSection id="schemas" eyebrow="Schemas" title="Two shapes you'll touch" motif={<MotifAmphora size={56} />}>
